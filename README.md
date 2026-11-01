@@ -1,6 +1,6 @@
 # Swiftify Installer
 <p align="center">
-  <img src="assets/swiftify-256.png" alt="Swiftify Installer" width="700">
+  <img src="assets/swiftify-256.png" alt="Swiftify Installer" width="128">
 </p>
 
 An unofficial, community-made **WINDOWS** installer and updater for
