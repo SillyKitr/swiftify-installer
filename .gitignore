@@ -1,0 +1,37 @@
+
+# Rust build output
+/target/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# IDEs and editors
+.vscode/
+.claude
+.idea/
+*.swp
+*.swo
+*~
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.old
+
+# Qt generated files
+/.qt/
+CMakeFiles/
+CMakeCache.txt
+cmake-build-*/
+*.qmlc
+*.jsc

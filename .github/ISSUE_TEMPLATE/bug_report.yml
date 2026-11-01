@@ -1,0 +1,42 @@
+name: Bug report
+description: Report a reproducible problem with the installer.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please search existing issues first. Do not include secrets or personal data in logs.
+  - type: input
+    id: windows-version
+    attributes:
+      label: Windows version and architecture
+      description: Include the Windows edition/build and confirm x86_64 if known.
+      placeholder: Windows 11 24H2, x86_64
+    validations:
+      required: true
+  - type: input
+    id: installer-version
+    attributes:
+      label: Installer version
+      description: Use the release version or commit if running a development build.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Describe the steps, expected result, and actual result.
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs and additional context
+      description: Paste relevant logs, error text, or screenshots. Remove sensitive information.
+    validations:
+      required: false

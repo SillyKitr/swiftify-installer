@@ -1,0 +1,31 @@
+name: Feature request
+description: Describe a problem or need that the project should address.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Focus on the user problem and desired outcome rather than prescribing an implementation.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is difficult, missing, or confusing today? Who is affected?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: What would a successful solution enable users to do?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add examples, constraints, or alternatives you considered.
+    validations:
+      required: false

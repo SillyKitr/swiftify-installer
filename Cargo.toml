@@ -1,0 +1,48 @@
+[package]
+name = "swiftify-installer"
+version = "0.1.0"
+edition = "2021"
+description = "Community-made Windows installer and updater for Swiftify"
+
+[features]
+default = ["egui"]
+egui = ["dep:eframe"]
+qt = ["dep:cxx", "dep:cxx-qt", "dep:cxx-qt-lib", "dep:cxx-qt-build", "dep:winres"]
+
+[[bin]]
+name = "swiftify-installer"
+path = "src/main.rs"
+required-features = ["egui"]
+
+[[bin]]
+name = "swiftify-installer-qt"
+path = "src/bin/qt.rs"
+required-features = ["qt"]
+
+[dependencies]
+cxx = { version = "1.0.95", optional = true }
+cxx-qt = { version = "0.10", optional = true }
+cxx-qt-lib = { version = "0.10", optional = true, features = ["qt_full"] }
+eframe = { version = "0.32", optional = true, default-features = false, features = ["default_fonts", "glow"] }
+fs2 = "0.4"
+crc32fast = "1"
+futures-util = "0.3"
+open = "5"
+reqwest = { version = "0.12", default-features = false, features = ["json", "stream", "rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sysinfo = "0.33"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "io-util", "time"] }
+url = "2"
+uuid = { version = "1", features = ["v4"] }
+windows = { version = "0.61", features = ["Win32_Foundation", "Win32_System_Com", "Win32_Storage_FileSystem", "Win32_System_Registry", "Win32_UI_Shell"] }
+zip = { version = "2", default-features = false, features = ["deflate"] }
+
+[build-dependencies]
+cxx-qt-build = { version = "0.10", optional = true, features = ["link_qt_object_files"] }
+winres = { version = "0.1", optional = true }
+
+[profile.release]
+opt-level = "s"
+lto = "thin"
+strip = true
