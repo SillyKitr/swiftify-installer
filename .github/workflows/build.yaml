@@ -4,11 +4,13 @@ name: Build Swiftify Installer
 on:
   push:
     branches: [main]
+    tags:
+      - 'v*'
   pull_request:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   CARGO_TERM_COLOR: always
@@ -16,7 +18,7 @@ env:
 jobs:
   build:
     name: Windows x64
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
       - name: Checkout repository
@@ -42,14 +44,67 @@ jobs:
           host: windows
           target: desktop
           arch: win64_msvc2022_64
-          modules: qtdeclarative
+          cache: true
 
       - name: Build application
         run: cargo build --release --features qt --target x86_64-pc-windows-msvc
 
-      - name: Upload executable
+      - name: Package application
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $buildDir = "target/x86_64-pc-windows-msvc/release"
+          $distDir = "dist"
+          $packageDir = "$distDir/swiftify-installer"
+
+          $executables = @(Get-ChildItem $buildDir -Filter "*.exe" -File)
+
+          if ($executables.Count -ne 1) {
+            throw "Expected exactly one executable in $buildDir, found $($executables.Count)"
+          }
+
+          $executable = $executables[0].FullName
+
+          New-Item -ItemType Directory -Force -Path $packageDir | Out-Null
+          Copy-Item $executable $packageDir
+
+          $packagedExe = Join-Path $packageDir $executables[0].Name
+
+          $windeployqt = Join-Path $env:QT_ROOT_DIR "bin/windeployqt.exe"
+
+          if (!(Test-Path $windeployqt)) {
+            throw "windeployqt was not found at $windeployqt"
+          }
+
+          & $windeployqt `
+            --release `
+            --compiler-runtime `
+            --qmldir qml `
+            --dir $packageDir `
+            $packagedExe
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "windeployqt failed with exit code $LASTEXITCODE"
+          }
+
+          Compress-Archive `
+            -Path "$packageDir/*" `
+            -DestinationPath "$distDir/swiftify-installer-windows-x64.zip" `
+            -Force
+
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: swiftify-installer-windows-x64
-          path: target/x86_64-pc-windows-msvc/release/*.exe
+          path: dist/swiftify-installer-windows-x64.zip
           if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Swiftify Installer ${{ github.ref_name }}
+          generate_release_notes: true
+          files: dist/swiftify-installer-windows-x64.zip
+          fail_on_unmatched_files: true
