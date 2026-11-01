@@ -47,7 +47,7 @@ jobs:
           cache: true
 
       - name: Build application
-        run: cargo build --release --features qt --target x86_64-pc-windows-msvc
+        run: cargo build --release --no-default-features --features qt --bin swiftify-installer-qt --target x86_64-pc-windows-msvc
 
       - name: Package application
         shell: pwsh
