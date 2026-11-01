@@ -1,0 +1,55 @@
+
+name: Build Swiftify Installer
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Windows x64
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.10.0'
+          host: windows
+          target: desktop
+          arch: win64_msvc2022_64
+          modules: qtdeclarative
+
+      - name: Build application
+        run: cargo build --release --features qt --target x86_64-pc-windows-msvc
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: swiftify-installer-windows-x64
+          path: target/x86_64-pc-windows-msvc/release/*.exe
+          if-no-files-found: error
